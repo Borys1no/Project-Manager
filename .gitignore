@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Project documentation - local only
+/docs/
+# OpenCode local configuration and skills
+/.opencode/
