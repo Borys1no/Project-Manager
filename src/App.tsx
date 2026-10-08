@@ -1,33 +1,21 @@
 import { AppShell } from './app/AppShell'
-import { MarkdownRenderer } from './components/ui/MarkdownRenderer'
+import { ProjectDetailView } from './features/projects/ProjectDetailView'
+import { ProjectsView } from './features/projects/ProjectsView'
+import { useProjectStore } from './stores/projectStore'
 
 function App() {
+  const project = useProjectStore((state) =>
+    state.projects.find((item) => item.id === state.selectedProjectId),
+  )
+  const selectProject = useProjectStore((state) => state.selectProject)
+
   return (
     <AppShell>
-      <h2 className="text-2xl font-semibold">Prueba de Markdown</h2>
-
-      <MarkdownRenderer
-        content={`
-## Cómo desarrollar esta tarea
-
-Implementar la primera versión del proyecto.
-
-### Pasos
-
-- [ ] Crear estructura inicial
-- [ ] Configurar Tailwind
-- [ ] Crear App Shell
-- [x] Configurar Markdown
-
-### Notas
-
-> Mantener la aplicación simple.
-
-\`\`\`typescript
-const projectName = 'Project Manager'
-\`\`\`
-        `}
-      />
+      {project ? (
+        <ProjectDetailView project={project} onBack={() => selectProject(null)} />
+      ) : (
+        <ProjectsView />
+      )}
     </AppShell>
   )
 }
