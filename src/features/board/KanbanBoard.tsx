@@ -22,9 +22,11 @@ import type { Task } from '../../types/task'
 import { KanbanColumn } from './KanbanColumn'
 import { TaskCardOverlay } from './TaskCard'
 import { TaskDetailView } from '../tasks/TaskDetailView'
+import { TaskForm } from '../tasks/TaskForm'
 
 type KanbanBoardProps = {
   project: Project
+  onCreateTask?: (columnId: string) => void
 }
 
 const collisionDetection: CollisionDetection = (args) => {
@@ -32,7 +34,7 @@ const collisionDetection: CollisionDetection = (args) => {
   return pointerCollisions.length > 0 ? pointerCollisions : rectIntersection(args)
 }
 
-export function KanbanBoard({ project }: KanbanBoardProps) {
+export function KanbanBoard({ project, onCreateTask }: KanbanBoardProps) {
   const tasks = useTaskStore((state) => state.tasks)
   const moveTask = useTaskStore((state) => state.moveTask)
   const deleteTask = useTaskStore((state) => state.deleteTask)
@@ -40,6 +42,7 @@ export function KanbanBoard({ project }: KanbanBoardProps) {
   const openTask = useUiStore((state) => state.openTask)
   const closeTask = useUiStore((state) => state.closeTask)
   const [draggingTask, setDraggingTask] = useState<Task | null>(null)
+  const [creatingInColumn, setCreatingInColumn] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
@@ -123,6 +126,11 @@ export function KanbanBoard({ project }: KanbanBoardProps) {
     openTask(task.id)
   }
 
+  const handleCreateTask = (columnId: string) => {
+    setCreatingInColumn(columnId)
+    onCreateTask?.(columnId)
+  }
+
   const selectedTask =
     selectedTaskId === null
       ? undefined
@@ -136,6 +144,16 @@ export function KanbanBoard({ project }: KanbanBoardProps) {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
+      {creatingInColumn && (
+        <div className="px-3 py-2">
+          <TaskForm
+            projectId={project.id}
+            columnId={creatingInColumn}
+            onClose={() => setCreatingInColumn(null)}
+          />
+        </div>
+      )}
+
       <section
         aria-label="Tablero Kanban"
         className="mt-6 flex gap-4 overflow-x-auto pb-4"
@@ -149,6 +167,8 @@ export function KanbanBoard({ project }: KanbanBoardProps) {
               .sort((a, b) => a.position - b.position)}
             onDeleteTask={handleDeleteTask}
             onOpenTask={handleOpenTask}
+            onCreateTask={handleCreateTask}
+            isCreating={creatingInColumn === column.id}
           />
         ))}
       </section>

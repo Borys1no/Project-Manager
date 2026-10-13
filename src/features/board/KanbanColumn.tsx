@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -14,6 +13,8 @@ type KanbanColumnProps = {
   tasks: Task[]
   onDeleteTask: (task: Task) => void
   onOpenTask: (task: Task) => void
+  onCreateTask: (columnId: string) => void
+  isCreating: boolean
 }
 
 export function KanbanColumn({
@@ -21,8 +22,9 @@ export function KanbanColumn({
   tasks,
   onDeleteTask,
   onOpenTask,
+  onCreateTask,
+  isCreating,
 }: KanbanColumnProps) {
-  const [isCreating, setIsCreating] = useState(false)
   const { setNodeRef } = useDroppable({ id: column.id })
 
   return (
@@ -37,12 +39,12 @@ export function KanbanColumn({
           <TaskForm
             projectId={column.projectId}
             columnId={column.id}
-            onClose={() => setIsCreating(false)}
+            onClose={() => onCreateTask('')}
           />
         ) : (
           <button
             type="button"
-            onClick={() => setIsCreating(true)}
+            onClick={() => onCreateTask(column.id)}
             className="w-full rounded-md border border-dashed border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-white dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             + Crear
