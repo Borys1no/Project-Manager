@@ -1,9 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --color-primary: #6366F1;
+  --color-primary-hover: #4F46E5;
+  --color-primary-light: #EEF2FF;
+  --color-primary-dark: #4338CA;
+  --color-secondary: #38BDF8;
+  --color-secondary-hover: #0EA5E9;
+  --color-secondary-light: #E0F2FE;
+  --color-tertiary: #10B981;
+  --color-tertiary-hover: #059669;
+  --color-tertiary-light: #ECFDF5;
+  --color-neutral: #0B0F17;
+  --color-neutral-light: #1E293B;
+}
+
+@theme {
+  --font-headline: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-label: "JetBrains Mono", monospace;
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+  --color-secondary-light: var(--color-secondary-light);
+  --color-tertiary: var(--color-tertiary);
+  --color-tertiary-hover: var(--color-tertiary-hover);
+  --color-tertiary-light: var(--color-tertiary-light);
+  --color-neutral: var(--color-neutral);
+  --color-neutral-light: var(--color-neutral-light);
+}
+
+* {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headline);
+}
+
+.font-label {
+  font-family: var(--font-label);
+}
+
 html.dark {
   color-scheme: dark;
+}
+
+body {
+  @apply antialiased;
 }
 
 .markdown-content > :first-child {
@@ -27,6 +78,7 @@ html.dark {
   margin: 1rem 0 0.5rem;
   font-weight: 600;
   line-height: 1.25;
+  font-family: var(--font-headline);
 }
 
 .markdown-content h1 {
@@ -94,6 +146,7 @@ html.dark {
   background-color: #f1f5f9;
   padding: 0.125rem 0.375rem;
   font-size: 0.875em;
+  font-family: var(--font-label);
 }
 
 .markdown-content pre code {
