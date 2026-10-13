@@ -5,11 +5,13 @@ export type Column = {
   position: number
 }
 
+export const COMPLETED_COLUMN_KEY = 'completado'
+
 const KANBAN_COLUMN_DEFINITIONS = [
   { key: 'pendiente', name: 'Pendiente' },
   { key: 'en-progreso', name: 'En progreso' },
   { key: 'en-revision', name: 'En revisión' },
-  { key: 'completado', name: 'Completado' },
+  { key: COMPLETED_COLUMN_KEY, name: 'Completado' },
 ] as const
 
 export function getProjectColumns(projectId: string): Column[] {
@@ -19,4 +21,8 @@ export function getProjectColumns(projectId: string): Column[] {
     name: definition.name,
     position,
   }))
+}
+
+export function isCompletedColumn(columnId: string): boolean {
+  return columnId.endsWith(`:${COMPLETED_COLUMN_KEY}`)
 }

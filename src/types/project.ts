@@ -18,12 +18,14 @@ export const projectEditSchema = projectInputSchema.extend({
 
 export type ProjectEditInput = z.infer<typeof projectEditSchema>
 
-export type Project = {
-  id: string
-  name: string
-  description: string
-  color: string
-  status: ProjectStatus
-  createdAt: string
-  updatedAt: string
-}
+export const projectSchema = z.object({
+  id: z.string().min(1, 'El identificador es obligatorio.'),
+  name: z.string().trim().min(1, 'El nombre es obligatorio.'),
+  description: z.string().trim(),
+  color: z.string().min(1, 'El color es obligatorio.'),
+  status: projectStatusSchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export type Project = z.infer<typeof projectSchema>

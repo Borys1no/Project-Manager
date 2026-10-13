@@ -25,15 +25,17 @@ export const taskInputSchema = z.object({
 
 export type TaskInput = z.infer<typeof taskInputSchema>
 
-export type Task = {
-  id: string
-  projectId: string
-  columnId: string
-  title: string
-  content: string
-  priority: TaskPriority
-  dueDate: string | null
-  position: number
-  createdAt: string
-  updatedAt: string
-}
+export const taskSchema = z.object({
+  id: z.string().min(1, 'El identificador es obligatorio.'),
+  projectId: z.string().min(1, 'El proyecto es obligatorio.'),
+  columnId: z.string().min(1, 'La columna es obligatoria.'),
+  title: z.string().trim().min(1, 'El título es obligatorio.'),
+  content: z.string().trim(),
+  priority: taskPrioritySchema,
+  dueDate: dueDateSchema,
+  position: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export type Task = z.infer<typeof taskSchema>

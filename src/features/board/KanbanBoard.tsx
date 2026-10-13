@@ -15,6 +15,7 @@ import {
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useTaskStore } from '../../stores/taskStore'
+import { useUiStore } from '../../stores/uiStore'
 import { getProjectColumns } from '../../types/column'
 import type { Project } from '../../types/project'
 import type { Task } from '../../types/task'
@@ -35,8 +36,10 @@ export function KanbanBoard({ project }: KanbanBoardProps) {
   const tasks = useTaskStore((state) => state.tasks)
   const moveTask = useTaskStore((state) => state.moveTask)
   const deleteTask = useTaskStore((state) => state.deleteTask)
+  const selectedTaskId = useUiStore((state) => state.selectedTaskId)
+  const openTask = useUiStore((state) => state.openTask)
+  const closeTask = useUiStore((state) => state.closeTask)
   const [draggingTask, setDraggingTask] = useState<Task | null>(null)
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
@@ -111,13 +114,13 @@ export function KanbanBoard({ project }: KanbanBoardProps) {
     if (confirmed) {
       deleteTask(task.id)
       if (selectedTaskId === task.id) {
-        setSelectedTaskId(null)
+        closeTask()
       }
     }
   }
 
   const handleOpenTask = (task: Task) => {
-    setSelectedTaskId(task.id)
+    openTask(task.id)
   }
 
   const selectedTask =
@@ -155,10 +158,7 @@ export function KanbanBoard({ project }: KanbanBoardProps) {
       </DragOverlay>
 
       {selectedTask !== undefined && (
-        <TaskDetailView
-          task={selectedTask}
-          onClose={() => setSelectedTaskId(null)}
-        />
+        <TaskDetailView task={selectedTask} onClose={closeTask} />
       )}
     </DndContext>
   )
