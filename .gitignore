@@ -26,3 +26,5 @@ dist-ssr
 /docs/
 # OpenCode local configuration and skills
 /.opencode/
+# Rust build artifacts (Tauri)
+/src-tauri/target/

@@ -4,5 +4,10 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  clearScreen: false,
   plugins: [react(), tailwindcss()],
+  server: {
+    port: 1420,
+    strictPort: true,
+  },
 })
