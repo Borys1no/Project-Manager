@@ -69,12 +69,7 @@ export function ProjectDetailView({ project, onBack }: ProjectDetailViewProps) {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'kanban':
-        return (
-          <KanbanBoard
-            project={project}
-            onCreateTask={handleCreateTask}
-          />
-        )
+        return <KanbanBoard project={project} />
       case 'tasks':
         return (
           <ProjectTaskList
@@ -83,7 +78,7 @@ export function ProjectDetailView({ project, onBack }: ProjectDetailViewProps) {
           />
         )
       case 'schedule':
-        return <ScheduleView />
+        return <ScheduleView projectId={project.id} />
       default:
         return null
     }

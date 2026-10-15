@@ -26,7 +26,6 @@ import { TaskForm } from '../tasks/TaskForm'
 
 type KanbanBoardProps = {
   project: Project
-  onCreateTask?: (columnId: string) => void
 }
 
 const collisionDetection: CollisionDetection = (args) => {
@@ -34,7 +33,7 @@ const collisionDetection: CollisionDetection = (args) => {
   return pointerCollisions.length > 0 ? pointerCollisions : rectIntersection(args)
 }
 
-export function KanbanBoard({ project, onCreateTask }: KanbanBoardProps) {
+export function KanbanBoard({ project }: KanbanBoardProps) {
   const tasks = useTaskStore((state) => state.tasks)
   const moveTask = useTaskStore((state) => state.moveTask)
   const deleteTask = useTaskStore((state) => state.deleteTask)
@@ -128,7 +127,10 @@ export function KanbanBoard({ project, onCreateTask }: KanbanBoardProps) {
 
   const handleCreateTask = (columnId: string) => {
     setCreatingInColumn(columnId)
-    onCreateTask?.(columnId)
+  }
+
+  const handleCancelCreate = () => {
+    setCreatingInColumn(null)
   }
 
   const selectedTask =
@@ -168,6 +170,7 @@ export function KanbanBoard({ project, onCreateTask }: KanbanBoardProps) {
             onDeleteTask={handleDeleteTask}
             onOpenTask={handleOpenTask}
             onCreateTask={handleCreateTask}
+            onCancelCreate={handleCancelCreate}
             isCreating={creatingInColumn === column.id}
           />
         ))}

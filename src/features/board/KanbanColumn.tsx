@@ -15,6 +15,7 @@ type KanbanColumnProps = {
   onDeleteTask: (task: Task) => void
   onOpenTask: (task: Task) => void
   onCreateTask: (columnId: string) => void
+  onCancelCreate: () => void
   isCreating: boolean
 }
 
@@ -24,6 +25,7 @@ export function KanbanColumn({
   onDeleteTask,
   onOpenTask,
   onCreateTask,
+  onCancelCreate,
   isCreating,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({ id: column.id })
@@ -43,7 +45,7 @@ export function KanbanColumn({
           <TaskEditor
             projectId={column.projectId}
             columnId={column.id}
-            onClose={() => onCreateTask('')}
+            onClose={onCancelCreate}
             project={currentProject}
           />
         ) : (

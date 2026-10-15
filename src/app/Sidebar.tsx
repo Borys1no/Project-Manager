@@ -1,4 +1,5 @@
 import { useUiStore } from '../stores/uiStore'
+import { useProjectStore } from '../stores/projectStore'
 
 const sections = [
   { id: 'home' as const, label: 'Inicio', icon: HomeIcon },
@@ -56,6 +57,7 @@ function SettingsIcon({ className }: { className?: string }) {
 
 export function Sidebar() {
   const { sidebarExpanded, toggleSidebar, activeSection, setActiveSection } = useUiStore()
+  const selectProject = useProjectStore((state) => state.selectProject)
 
   return (
     <aside
@@ -98,7 +100,10 @@ export function Sidebar() {
             <button
               key={section.id}
               type="button"
-              onClick={() => setActiveSection(section.id)}
+              onClick={() => {
+                selectProject(null)
+                setActiveSection(section.id)
+              }}
               className={`
                 w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150
                 ${isActive

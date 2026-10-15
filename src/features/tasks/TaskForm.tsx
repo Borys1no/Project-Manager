@@ -7,6 +7,7 @@ import {
   type Task,
   type TaskPriority,
 } from '../../types/task'
+import { getLocalDateKey } from '../../utils/date'
 
 type TaskFormProps = {
   projectId: string
@@ -30,12 +31,15 @@ export function TaskForm({
     task?.priority ?? 'medium',
   )
   const [dueDate, setDueDate] = useState(task?.dueDate ?? '')
+  const [plannedStart, setPlannedStart] = useState(
+    task?.plannedStartDate ?? getLocalDateKey(),
+  )
   const [error, setError] = useState<string | null>(null)
 
   const idBase = task?.id ?? `new-${columnId}`
   const errorId = `task-form-error-${idBase}`
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const result = taskInputSchema.safeParse({
@@ -43,6 +47,7 @@ export function TaskForm({
       content,
       priority,
       dueDate: dueDate === '' ? null : dueDate,
+      plannedStartDate: plannedStart,
     })
     if (!result.success) {
       setError(
@@ -51,12 +56,16 @@ export function TaskForm({
       return
     }
 
-    if (task) {
-      updateTask(task.id, result.data)
-    } else {
-      createTask(projectId, columnId, result.data)
+    try {
+      if (task) {
+        await updateTask(task.id, result.data)
+      } else {
+        await createTask(projectId, columnId, result.data)
+      }
+      onClose()
+    } catch {
+      setError('No se pudo guardar la tarea. Inténtalo de nuevo.')
     }
-    onClose()
   }
 
   const handlePriorityChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -133,6 +142,25 @@ export function TaskForm({
               ),
             )}
           </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor={`task-planned-start-${idBase}`}
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+          >
+            Fecha de inicio planificada
+          </label>
+          <input
+            id={`task-planned-start-${idBase}`}
+            type="date"
+            value={plannedStart}
+            onChange={(event) => {
+              setPlannedStart(event.target.value)
+              setError(null)
+            }}
+            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 sm:w-auto"
+          />
         </div>
 
         <div>

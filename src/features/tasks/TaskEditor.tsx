@@ -3,6 +3,7 @@ import { useTaskStore } from '../../stores/taskStore'
 import { useProjectStore } from '../../stores/projectStore'
 import { taskInputSchema, taskPriorityLabels, type Task, type TaskPriority } from '../../types/task'
 import { getProjectColumns } from '../../types/column'
+import { getLocalDateKey } from '../../utils/date'
 import { MarkdownRenderer } from '../../components/ui/MarkdownRenderer'
 import type { Project } from '../../types/project'
 
@@ -112,6 +113,9 @@ export function TaskEditor({
   const [content, setContent] = useState(task?.content ?? '')
   const [priority, setPriority] = useState<TaskPriority>(task?.priority ?? 'medium')
   const [dueDate, setDueDate] = useState(task?.dueDate ?? '')
+  const [plannedStart, setPlannedStart] = useState(
+    task?.plannedStartDate ?? getLocalDateKey(),
+  )
   const [sprint, setSprint] = useState(task?.sprintId ?? '')
   const [tags, setTags] = useState<string[]>(task?.tagIds ?? [])
   const [showPreview, setShowPreview] = useState(false)
@@ -141,6 +145,7 @@ export function TaskEditor({
         content,
         priority,
         dueDate: dueDate === '' ? null : dueDate,
+        plannedStartDate: plannedStart,
       })
 
       if (!result.success) {
@@ -156,7 +161,7 @@ export function TaskEditor({
         }
 
         if (mode === 'create') {
-          createTask(projectId, pendingColumn?.id ?? columnId, taskData)
+          await createTask(projectId, pendingColumn?.id ?? columnId, taskData)
         } else if (task) {
           await updateTask(task.id, taskData)
         }
@@ -165,7 +170,7 @@ export function TaskEditor({
         setError('No se pudo guardar la tarea. Inténtalo de nuevo.')
       }
     },
-    [mode, title, content, priority, dueDate, sprint, tags, projectId, columnId, pendingColumn, task, createTask, updateTask, onClose]
+    [mode, title, content, priority, dueDate, plannedStart, sprint, tags, projectId, columnId, pendingColumn, task, createTask, updateTask, onClose]
   )
 
   useEffect(() => {
@@ -280,6 +285,23 @@ export function TaskEditor({
               label="Fecha de creación"
             >
               <span className="text-sm text-slate-600 dark:text-slate-300">{createdLabel}</span>
+            </PropertyRow>
+
+            {/* Planned start date */}
+            <PropertyRow
+              icon={<RowIcon className="text-emerald-500 dark:text-emerald-400"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /><path d="m9 15 2 2 4-4" /></RowIcon>}
+              label="Inicio planificado"
+            >
+              <input
+                type="date"
+                value={plannedStart}
+                onChange={(e) => {
+                  setPlannedStart(e.target.value)
+                  setError(null)
+                }}
+                className={borderlessInput}
+                aria-label="Fecha de inicio planificada"
+              />
             </PropertyRow>
 
             {/* Due date */}

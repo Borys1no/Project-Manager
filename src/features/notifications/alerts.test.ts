@@ -14,7 +14,7 @@ const project: Project = {
 }
 
 function makeTask(overrides: Partial<Task> = {}): Task {
-  return {
+  const base: Task = {
     id: 't1',
     projectId: project.id,
     columnId: `${project.id}:pendiente`,
@@ -22,11 +22,12 @@ function makeTask(overrides: Partial<Task> = {}): Task {
     content: '',
     priority: 'medium',
     dueDate: null,
+    plannedStartDate: '2026-01-01',
     position: 0,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
-    ...overrides,
   }
+  return { ...base, ...overrides }
 }
 
 const today = '2026-06-15'

@@ -1,13 +1,14 @@
 import type { ZodType } from 'zod'
 import { openDatabase } from './database'
 import { projectSchema, type Project } from '../../types/project'
-import { taskSchema, type Task } from '../../types/task'
+import { type Task } from '../../types/task'
 import { checklistItemSchema, type ChecklistItem } from '../../types/checklist'
 import {
   THEME_SETTING_ID,
   themeSettingSchema,
   type ThemeSetting,
 } from '../../types/theme'
+import { parseTaskRecord } from './taskRecord'
 
 type StorageStoreName = 'projects' | 'tasks' | 'checklistItems' | 'settings'
 
@@ -131,6 +132,39 @@ function removeRecord(storeName: StorageStoreName, id: string): Promise<void> {
     })
 }
 
+function getAllTasks(): Promise<Task[]> {
+  return openDatabase()
+    .then(
+      (database) =>
+        new Promise<unknown[]>((resolve, reject) => {
+          const transaction = database.transaction('tasks', 'readonly')
+          const request = transaction.objectStore('tasks').getAll()
+          request.onsuccess = () => resolve(request.result)
+          request.onerror = () =>
+            reject(request.error ?? new Error('No se pudo leer "tasks".'))
+        }),
+    )
+    .then((records) => {
+      const tasks: Task[] = []
+      for (const record of records) {
+        const parsed = parseTaskRecord(record)
+        if (parsed === null) {
+          console.warn('Registro descartado de "tasks" por no ser válido.', record)
+          continue
+        }
+        if (parsed.normalized) {
+          void saveRecord('tasks', parsed.task)
+        }
+        tasks.push(parsed.task)
+      }
+      return tasks
+    })
+    .catch((error: unknown) => {
+      console.error('Error al cargar "tasks" desde IndexedDB.', error)
+      return [] as Task[]
+    })
+}
+
 export const projectStorage = {
   getAll: (): Promise<Project[]> => getAllRecords('projects', projectSchema),
   save: (project: Project): Promise<void> => saveRecord('projects', project),
@@ -138,7 +172,7 @@ export const projectStorage = {
 }
 
 export const taskStorage = {
-  getAll: (): Promise<Task[]> => getAllRecords('tasks', taskSchema),
+  getAll: (): Promise<Task[]> => getAllTasks(),
   save: (task: Task): Promise<void> => saveRecord('tasks', task),
   remove: (id: string): Promise<void> => removeRecord('tasks', id),
 }

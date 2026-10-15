@@ -9,7 +9,7 @@ import { taskStorage } from '../services/storage/storageService'
 type TaskStore = {
   tasks: Task[]
   loadTasks: () => Promise<void>
-  createTask: (projectId: string, columnId: string, input: TaskInput) => void
+  createTask: (projectId: string, columnId: string, input: TaskInput) => Promise<void>
   updateTask: (id: string, input: TaskInput) => void
   deleteTask: (id: string) => void
   moveTask: (taskId: string, columnId: string, index: number) => void
@@ -38,6 +38,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       content: data.content,
       priority: data.priority,
       dueDate: data.dueDate,
+      plannedStartDate: data.plannedStartDate,
       position,
       createdAt: now,
       updatedAt: now,
@@ -46,7 +47,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set((state) => ({
       tasks: [...state.tasks, task],
     }))
-    void taskStorage.save(task)
+    return taskStorage.save(task)
   },
 
   updateTask: (id, input) => {
