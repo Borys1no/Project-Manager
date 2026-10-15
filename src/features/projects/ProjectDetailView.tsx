@@ -7,7 +7,7 @@ import { ProjectTaskList } from './ProjectTaskList'
 import { ScheduleView } from '../schedule/ScheduleView'
 import { ProjectStatusBadge } from './ProjectStatusBadge'
 import { ProjectForm } from './ProjectForm'
-import { TaskForm } from '../tasks/TaskForm'
+import { TaskEditor } from '../tasks/TaskEditor'
 import type { Project } from '../../types/project'
 import { getProjectColumns } from '../../types/column'
 
@@ -211,10 +211,11 @@ export function ProjectDetailView({ project, onBack }: ProjectDetailViewProps) {
       <div className="bg-white dark:bg-slate-900 rounded-b-lg border border-slate-200 dark:border-slate-700 border-t-0">
         {isCreatingTask && activeTab === 'kanban' && (
           <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-            <TaskForm
+            <TaskEditor
               projectId={project.id}
               columnId={columns[0].id}
               onClose={handleTaskFormClose}
+              project={project}
             />
           </div>
         )}

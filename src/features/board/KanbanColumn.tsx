@@ -3,10 +3,11 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
+import { useProjectStore } from '../../stores/projectStore'
 import type { Column } from '../../types/column'
 import type { Task } from '../../types/task'
 import { TaskCard } from './TaskCard'
-import { TaskForm } from '../tasks/TaskForm'
+import { TaskEditor } from '../tasks/TaskEditor'
 
 type KanbanColumnProps = {
   column: Column
@@ -26,6 +27,9 @@ export function KanbanColumn({
   isCreating,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({ id: column.id })
+  const currentProject = useProjectStore((state) =>
+    state.projects.find((p) => p.id === column.projectId),
+  )
 
   return (
     <section className="flex min-w-64 flex-1 flex-col rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
@@ -36,10 +40,11 @@ export function KanbanColumn({
 
       <div className="px-3 py-2">
         {isCreating ? (
-          <TaskForm
+          <TaskEditor
             projectId={column.projectId}
             columnId={column.id}
             onClose={() => onCreateTask('')}
+            project={currentProject}
           />
         ) : (
           <button
